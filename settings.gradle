@@ -1,0 +1,3 @@
+rootProject.name = 'configurationissue'
+include 'a'
+include 'b'

@@ -1,0 +1,43 @@
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+
+class MyPlugin implements Plugin<Project> {
+    void apply(Project project) {
+        project.configurations.create('extra')
+        project.afterEvaluate {
+            def files = project.configurations.extra.resolve()
+            project.publishing {
+                publications {
+                    example(org.gradle.api.publish.maven.MavenPublication) {
+                        pom.withXml {
+                            asNode().appendNode('description', 'Example')
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+allprojects {
+    group = 'test.group'
+    version = '0.1.0'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: MyPlugin
+
+    dependencies {
+        extra files('../libs/my.txt')
+    }
+
+    publishing {
+        publications {
+            example(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+}
